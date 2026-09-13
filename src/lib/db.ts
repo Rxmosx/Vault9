@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { Bytes } from './crypto/types'
+import type {KdfParams} from "./crypto/kdf.ts";
 
 // Everything stored here is ciphertext + the metadata needed to decrypt it
 // (IV, Argon2 salt). No plaintext credential data or master password ever
@@ -10,6 +11,7 @@ export const VAULT_META_ID = 'singleton'
 export interface VaultMetaRecord {
   id: typeof VAULT_META_ID
   salt: Bytes
+  kdfParams: KdfParams
   /** Ciphertext of a known plaintext; decrypting it with the derived key
    * confirms the master password without ever persisting the password. */
   verifier: Bytes

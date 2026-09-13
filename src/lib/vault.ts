@@ -1,6 +1,6 @@
 import { encryptString, decryptToString } from './crypto/aes'
-import { deriveKey } from './crypto/kdf'
-import { db, VAULT_META_ID, type CredentialRecord } from './db'
+import {deriveKey, KDF_PARAMS} from './crypto/kdf'
+import { db, VAULT_META_ID, type CredentialRecord, type VaultMetaRecord} from './db'
 
 // Known plaintext used only to confirm the master password on unlock — it
 // is never a secret, since correctness is verified locally and nothing
@@ -17,6 +17,8 @@ export interface Credential {
   createdAt: number
   updatedAt: number
 }
+
+type VaultMeta = Omit<VaultMetaRecord, 'id' | 'createdAt'>
 
 export type CredentialInput = Omit<Credential, 'id' | 'createdAt' | 'updatedAt'>
 
@@ -37,23 +39,41 @@ export async function hasVault(): Promise<boolean> {
   return meta !== undefined
 }
 
+
+async function generateVaultMeta(masterPassword: string,): Promise<{ meta: VaultMeta; key: CryptoKey }> {
+
+  const { key, salt } = await deriveKey(masterPassword)
+  const { ciphertext, iv } = await encryptString(key, VERIFIER_PLAINTEXT)
+
+  return {
+    meta: {
+      salt,
+      kdfParams: KDF_PARAMS,
+      verifier: ciphertext,
+      verifierIv: iv
+    },
+    key,
+  }
+}
+
+
+async function persistVaultMeta(meta: VaultMeta): Promise<void> {
+  await db.meta.put({
+    id: VAULT_META_ID,
+    ...meta,
+    createdAt: Date.now()
+  })
+}
+
+
 export async function createVault(masterPassword: string): Promise<void> {
   const existing = await db.meta.get(VAULT_META_ID)
   if (existing) {
     throw new Error('Vault already exists')
   }
 
-  const { key, salt } = await deriveKey(masterPassword)
-  const { ciphertext, iv } = await encryptString(key, VERIFIER_PLAINTEXT)
-
-  await db.meta.put({
-    id: VAULT_META_ID,
-    salt,
-    verifier: ciphertext,
-    verifierIv: iv,
-    createdAt: Date.now(),
-  })
-
+  const { meta, key } = await generateVaultMeta(masterPassword)
+  await persistVaultMeta(meta)
   vaultKey = key
 }
 
@@ -63,7 +83,7 @@ export async function unlockVault(masterPassword: string): Promise<void> {
     throw new Error('No vault to unlock')
   }
 
-  const { key } = await deriveKey(masterPassword, meta.salt)
+  const { key } = await deriveKey(masterPassword, meta.salt, meta.kdfParams)
 
   let plaintext: string
   try {
@@ -72,10 +92,10 @@ export async function unlockVault(masterPassword: string): Promise<void> {
       iv: meta.verifierIv,
     })
   } catch {
-    throw new Error('Master password incorreta')
+    throw new Error('Wrong Master Password')
   }
   if (plaintext !== VERIFIER_PLAINTEXT) {
-    throw new Error('Master password incorreta')
+    throw new Error('Wrong Master Password')
   }
 
   vaultKey = key

@@ -11,12 +11,20 @@ export const SALT_LENGTH = 16
  * baseline (OWASP min: t=2, m=19456, p=1) with extra memory cost since this
  * runs client-side with no rate limiting to lean on otherwise.
  */
-export const KDF_PARAMS = {
+
+export interface KdfParams {
+  time: number
+  mem: number
+  parallelism: number
+  hashLen: number
+}
+
+export const KDF_PARAMS: KdfParams = {
   time: 3,
   mem: 65536,
   parallelism: 1,
   hashLen: 32,
-} as const
+}
 
 export function generateSalt(): Bytes {
   return crypto.getRandomValues(new Uint8Array(SALT_LENGTH))
@@ -35,12 +43,13 @@ export interface DerivedKey {
 export async function deriveKey(
   masterPassword: string,
   salt: Bytes = generateSalt(),
+  params: KdfParams = KDF_PARAMS,
 ): Promise<DerivedKey> {
   const result = await argon2.hash({
     pass: masterPassword,
     salt,
     type: argon2.ArgonType.Argon2id,
-    ...KDF_PARAMS,
+    ...params,
   })
 
   // result.hash comes from an ambient .d.ts as a bare (ArrayBufferLike)
