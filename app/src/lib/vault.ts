@@ -1,6 +1,6 @@
 import { encryptString, decryptToString } from './crypto/aes'
 import {deriveKey, KDF_PARAMS} from './crypto/kdf'
-import { db, VAULT_META_ID, type CredentialRecord, type VaultMetaRecord} from './db'
+import { db, VAULT_META_ID, type CredentialRecord, type ProjectRecord, type VaultMetaRecord} from './db'
 
 // Known plaintext used only to confirm the master password on unlock — it
 // is never a secret, since correctness is verified locally and nothing
@@ -11,11 +11,19 @@ export interface Credential {
   id: string
   title: string
   username: string
-  password: string
+  credential: string
   url?: string
   notes?: string
+  projectId: string
+  type: string
   createdAt: number
   updatedAt: number
+}
+
+export interface Project {
+  id: string
+  name: string
+  createdAt: number
 }
 
 type VaultMeta = Omit<VaultMetaRecord, 'id' | 'createdAt'>
@@ -122,7 +130,44 @@ async function decodeCredential(
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
     ...data,
+    projectId: data.projectId ?? '',
+    type: data.type ?? '',
   }
+}
+
+async function decodeProject(
+  key: CryptoKey,
+  record: ProjectRecord,
+): Promise<Project> {
+  const json = await decryptToString(key, {
+    ciphertext: record.ciphertext,
+    iv: record.iv,
+  })
+  const data = JSON.parse(json) as { name: string }
+  return { id: record.id, createdAt: record.createdAt, name: data.name }
+}
+
+export async function listProjects(): Promise<Project[]> {
+  const key = requireKey()
+  const records = await db.projects.orderBy('createdAt').toArray()
+  const results = await Promise.allSettled(
+    records.map((record) => decodeProject(key, record)),
+  )
+
+  return results
+    .filter((r): r is PromiseFulfilledResult<Project> => r.status === 'fulfilled')
+    .map((r) => r.value)
+}
+
+export async function createProject(name: string): Promise<Project> {
+  const key = requireKey()
+  const now = Date.now()
+  const id = crypto.randomUUID()
+  const { ciphertext, iv } = await encryptString(key, JSON.stringify({ name }))
+
+  await db.projects.put({ id, ciphertext, iv, createdAt: now })
+
+  return { id, name, createdAt: now }
 }
 
 export async function listCredentials(): Promise<Credential[]> {

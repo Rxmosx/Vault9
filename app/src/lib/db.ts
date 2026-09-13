@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { Bytes } from './crypto/types'
-import type {KdfParams} from "./crypto/kdf.ts";
+import type {KdfParams} from "./crypto/kdf";
 
 // Everything stored here is ciphertext + the metadata needed to decrypt it
 // (IV, Argon2 salt). No plaintext credential data or master password ever
@@ -27,15 +27,28 @@ export interface CredentialRecord {
   updatedAt: number
 }
 
+export interface ProjectRecord {
+  id: string
+  ciphertext: Bytes
+  iv: Bytes
+  createdAt: number
+}
+
 class VaultDatabase extends Dexie {
   meta!: EntityTable<VaultMetaRecord, 'id'>
   credentials!: EntityTable<CredentialRecord, 'id'>
+  projects!: EntityTable<ProjectRecord, 'id'>
 
   constructor() {
     super('vault')
     this.version(1).stores({
       meta: 'id',
       credentials: 'id, updatedAt',
+    })
+    this.version(2).stores({
+      meta: 'id',
+      credentials: 'id, updatedAt',
+      projects: 'id, createdAt',
     })
   }
 }

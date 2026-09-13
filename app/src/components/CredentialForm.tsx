@@ -1,104 +1,172 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
-import type { CredentialInput } from '../lib/vault'
+import {useState} from 'react'
+import type {FormEvent} from 'react'
+import type {CredentialInput, Project, Credential} from '../lib/vault'
 
 interface CredentialFormProps {
-  initial?: CredentialInput
-  onSubmit: (input: CredentialInput) => Promise<void>
-  onCancel: () => void
+    initial?: Credential
+    projects: Project[]
+    /** Project the credential is created inside; null lets the user pick one. */
+    fixedProjectId: string | null
+    typeSuggestions: string[]
+    onSubmit: (input: CredentialInput) => Promise<void>
+    onCancel: () => void
 }
 
-const EMPTY: CredentialInput = {
-  title: '',
-  username: '',
-  password: '',
-  url: '',
-  notes: '',
+function emptyValues(fixedProjectId: string | null): CredentialInput {
+    return {
+        title: '',
+        username: '',
+        credential: '',
+        url: '',
+        notes: '',
+        projectId: fixedProjectId ?? '',
+        type: '',
+    }
 }
+
+function normalizeType(input: string, suggestions: string[]): string {
+    const trimmed = input.trim()
+    if (!trimmed) return ''
+    const existing = suggestions.find(
+        (s) => s.toLowerCase() === trimmed.toLowerCase(),
+    )
+    return existing ?? trimmed
+}
+
+function valuesFromCredentials(
+    cred: Credential | undefined,
+    fixedProjectId: string | null,
+): CredentialInput {
+
+    if (!cred) return emptyValues(fixedProjectId)
+
+    const { title, username, credential, url, notes, projectId, type } = cred
+
+    return {title, username, credential, url, notes, projectId, type }
+}
+
 
 const inputClass =
-  'w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
+    'w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
 
 export function CredentialForm({
-  initial,
-  onSubmit,
-  onCancel,
+   initial,
+   projects,
+   fixedProjectId,
+   typeSuggestions,
+   onSubmit,
+   onCancel,
 }: CredentialFormProps) {
-  const [values, setValues] = useState<CredentialInput>(initial ?? EMPTY)
-  const [busy, setBusy] = useState(false)
 
-  function update<K extends keyof CredentialInput>(
-    key: K,
-    value: CredentialInput[K],
-  ) {
-    setValues((v) => ({ ...v, [key]: value }))
-  }
+    const [values, setValues] = useState<CredentialInput>(
+        valuesFromCredentials(initial, fixedProjectId),
+    )
+    const [busy, setBusy] = useState(false)
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    setBusy(true)
-    try {
-      await onSubmit(values)
-    } finally {
-      setBusy(false)
+    function update<K extends keyof CredentialInput>(
+        key: K,
+        value: CredentialInput[K],
+    ) {
+        setValues((v) => ({...v, [key]: value}))
     }
-  }
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
-    >
-      <input
-        placeholder="Título"
-        required
-        value={values.title}
-        onChange={(e) => update('title', e.target.value)}
-        className={inputClass}
-      />
-      <input
-        placeholder="Usuário / e-mail"
-        value={values.username}
-        onChange={(e) => update('username', e.target.value)}
-        className={inputClass}
-      />
-      <input
-        placeholder="Senha"
-        type="text"
-        required
-        value={values.password}
-        onChange={(e) => update('password', e.target.value)}
-        className={`${inputClass} font-mono`}
-      />
-      <input
-        placeholder="URL (opcional)"
-        value={values.url ?? ''}
-        onChange={(e) => update('url', e.target.value)}
-        className={inputClass}
-      />
-      <textarea
-        placeholder="Notas (opcional)"
-        value={values.notes ?? ''}
-        onChange={(e) => update('notes', e.target.value)}
-        rows={2}
-        className={inputClass}
-      />
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+    async function handleSubmit(event: FormEvent) {
+        event.preventDefault()
+        setBusy(true)
+        try {
+            await onSubmit({
+                ...values,
+                type: normalizeType(values.type, typeSuggestions),
+            })
+        } finally {
+            setBusy(false)
+        }
+    }
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="space-y-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
         >
-          {busy ? 'Salvando...' : 'Salvar'}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:text-neutral-100"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
-  )
+            <input
+                placeholder="Título"
+                required
+                value={values.title}
+                onChange={(e) => update('title', e.target.value)}
+                className={inputClass}
+            />
+            <input
+                placeholder="Usuário / e-mail"
+                value={values.username}
+                onChange={(e) => update('username', e.target.value)}
+                className={inputClass}
+            />
+            <input
+                placeholder="Password / Token / Credential"
+                type="text"
+                required
+                value={values.credential}
+                autoComplete="off"
+                onChange={(e) => update('credential', e.target.value)}
+                className={`${inputClass} font-mono`}
+            />
+            <input
+                placeholder="URL (opcional)"
+                value={values.url ?? ''}
+                onChange={(e) => update('url', e.target.value)}
+                className={inputClass}
+            />
+            <div>
+                <input
+                    placeholder="Tipo (ex: GitHub, Banco de Dados, API Token)"
+                    list="credential-type-suggestions"
+                    value={values.type ?? ''}
+                    onChange={(e) => update('type', e.target.value)}
+                    className={inputClass}
+                />
+                <datalist id="credential-type-suggestions">
+                    {typeSuggestions.map((t) => (
+                        <option key={t} value={t}/>
+                    ))}
+                </datalist>
+            </div>
+            {fixedProjectId === null && (
+                <select
+                    value={values.projectId}
+                    onChange={(e) => update('projectId', e.target.value)}
+                    className={inputClass}
+                >
+                    <option value="">Sem projeto</option>
+                    {projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                            {p.name}
+                        </option>
+                    ))}
+                </select>
+            )}
+            <textarea
+                placeholder="Notas (opcional)"
+                value={values.notes ?? ''}
+                onChange={(e) => update('notes', e.target.value)}
+                rows={2}
+                className={inputClass}
+            />
+            <div className="flex gap-2">
+                <button
+                    type="submit"
+                    disabled={busy}
+                    className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+                >
+                    {busy ? 'Salvando...' : 'Salvar'}
+                </button>
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:text-neutral-100"
+                >
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    )
 }
