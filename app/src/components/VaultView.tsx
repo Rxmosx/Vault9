@@ -144,6 +144,7 @@ export function VaultView({onLock}: VaultViewProps) {
         setTimeout(() => {
             setCopiedId((current) => (current === id ? null : current))
         }, 2_000)
+
         setTimeout(async () => {
             const current = await navigator.clipboard.readText().catch(() => null)
             if (current === password) await navigator.clipboard.writeText('')
@@ -153,12 +154,12 @@ export function VaultView({onLock}: VaultViewProps) {
     const chipClass = (active: boolean) =>
         `shrink-0 rounded-full border px-3 py-1 text-xs ${
             active
-                ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                ? 'border-indigo-600 bg-indigo-600 text-white'
+                : 'border-neutral-700 text-neutral-400 hover:bg-neutral-900'
         }`
 
     return (
-        <div className="flex h-svh bg-white dark:bg-neutral-900">
+        <div className="flex h-svh bg-neutral-950">
             <Sidebar
                 projects={projects}
                 selectedProjectId={selectedProjectId}
@@ -178,15 +179,15 @@ export function VaultView({onLock}: VaultViewProps) {
             />
 
             <main className="flex-1 overflow-y-auto px-4 py-8">
-                <div className="mx-auto max-w-2xl">
+                <div className="mx-auto max-w-4xl">
                     <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                        <h2 className="text-xl font-semibold text-neutral-100">
                             {currentProjectLabel}
                         </h2>
                         {!adding && (
                             <button
                                 onClick={() => setAdding(true)}
-                                className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm text-white dark:bg-neutral-100 dark:text-neutral-900"
+                                className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-500"
                             >
                                 + Nova credencial
                             </button>

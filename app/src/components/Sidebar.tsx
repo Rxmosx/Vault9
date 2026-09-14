@@ -22,8 +22,8 @@ interface SidebarProps {
 const itemClass = (active: boolean) =>
   `block w-full truncate rounded-md px-3 py-2 text-left text-sm ${
     active
-      ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
-      : 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
+      ? 'bg-indigo-600 text-white'
+      : 'text-neutral-400 hover:bg-neutral-900 hover:text-neutral-100'
   }`
 
 export function Sidebar({
@@ -41,11 +41,9 @@ export function Sidebar({
   onLock,
 }: SidebarProps) {
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-neutral-200 dark:border-neutral-700">
+    <aside className="flex w-60 shrink-0 flex-col border-r border-neutral-800">
       <div className="p-3">
-        <h1 className="px-3 py-2 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          Cofre
-        </h1>
+        <h1 className="px-3 py-2 text-lg font-semibold text-neutral-100">Cofre</h1>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3">
@@ -80,20 +78,20 @@ export function Sidebar({
               placeholder="Nome do projeto"
               value={newProjectName}
               onChange={(e) => onNewProjectNameChange(e.target.value)}
-              className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
+              className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
             />
             <div className="flex gap-2">
               <button
                 type="submit"
                 disabled={projectBusy}
-                className="rounded-md bg-neutral-900 px-2 py-1 text-xs text-white disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+                className="rounded-md bg-indigo-600 px-2 py-1 text-xs text-white hover:bg-indigo-500 disabled:opacity-50"
               >
                 Criar
               </button>
               <button
                 type="button"
                 onClick={onCancelCreatingProject}
-                className="rounded-md border border-neutral-300 px-2 py-1 text-xs dark:border-neutral-600 dark:text-neutral-100"
+                className="rounded-md border border-neutral-700 px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-900"
               >
                 Cancelar
               </button>
@@ -102,17 +100,17 @@ export function Sidebar({
         ) : (
           <button
             onClick={onStartCreatingProject}
-            className="w-full rounded-md px-3 py-2 text-left text-sm text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="w-full rounded-md px-3 py-2 text-left text-sm text-neutral-500 hover:bg-neutral-900 hover:text-neutral-300"
           >
             + Novo projeto
           </button>
         )}
       </nav>
 
-      <div className="border-t border-neutral-200 p-3 dark:border-neutral-700">
+      <div className="border-t border-neutral-800 p-3">
         <button
           onClick={onLock}
-          className="w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:text-neutral-100"
+          className="w-full rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-900"
         >
           Bloquear
         </button>

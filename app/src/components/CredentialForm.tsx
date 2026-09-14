@@ -47,7 +47,7 @@ function valuesFromCredentials(
 
 
 const inputClass =
-    'w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100'
+    'w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-500'
 
 export function CredentialForm({
    initial,
@@ -86,7 +86,7 @@ export function CredentialForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-3 rounded-lg border border-neutral-200 p-4 dark:border-neutral-700"
+            className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-900/60 p-4"
         >
             <input
                 placeholder="Título"
@@ -155,14 +155,14 @@ export function CredentialForm({
                 <button
                     type="submit"
                     disabled={busy}
-                    className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+                    className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-500 disabled:opacity-50"
                 >
                     {busy ? 'Salvando...' : 'Salvar'}
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm dark:border-neutral-600 dark:text-neutral-100"
+                    className="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800"
                 >
                     Cancelar
                 </button>

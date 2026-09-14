@@ -17,7 +17,7 @@ function App() {
 
   if (!ready) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-white dark:bg-neutral-900">
+      <div className="flex min-h-svh items-center justify-center bg-neutral-950">
         <p className="text-neutral-500">Carregando...</p>
       </div>
     )
