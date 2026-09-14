@@ -18,6 +18,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
+
 @theme {
   --color-surface-page: #0d1117;
   --color-surface-page-deep: #090d16;
@@ -46,6 +47,19 @@ button:disabled {
   --color-ink-primary: #f3f4f6;
   --color-ink-secondary: #9ca3af;
   --color-ink-muted: #6b7280;
+
+  --animate-fade-in: fade-in 200ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 :root {

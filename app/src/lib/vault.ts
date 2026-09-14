@@ -197,9 +197,10 @@ export async function addCredential(
 }
 
 export async function updateCredential(
-  id: string,
-  input: CredentialInput,
+    id: string,
+    input: CredentialInput,
 ): Promise<Credential> {
+
   const key = requireKey()
   const existing = await db.credentials.get(id)
   if (!existing) {
