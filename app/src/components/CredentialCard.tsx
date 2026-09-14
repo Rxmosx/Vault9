@@ -142,6 +142,11 @@ function formatRelativeUpdated(updatedAt: number): string {
     return `Modificado há ${diffDays} dias`
 }
 
+function normalizeUrl(url: string): string {
+    if (!url) return ''
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
+}
+
 const badgeClass =
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border border-surface-card-border bg-surface-card px-2.5 py-1 text-xs text-ink-secondary'
 
@@ -176,9 +181,9 @@ export function CredentialCard({
     ].filter(Boolean) as string[]
 
     return (
-        <div className="rounded-xl border border-surface-card-border bg-surface-card transition hover:border-ink-muted cursor-pointer" onClick={() => setExpanded((v) => !v)}>
+        <div className="m-auto mb-6 max-w-5xl rounded-xl border border-surface-card-border bg-surface-card transition hover:border-ink-muted ">
             {/* Cabeçalho — sempre visível, botões sempre visíveis (sem depender de hover/expand) */}
-            <div className="flex flex-wrap items-start justify-between gap-3 p-4" >
+            <div className="flex flex-wrap items-start justify-between gap-3 p-4 cursor-pointer" onClick={() => setExpanded((v) => !v)}>
                 <div className="flex min-w-0 items-center gap-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-surface-card-border border-ink-muted text-ink-muted/95">
                         {renderTypeIcon(credential.type, 'h-4 w-4')}
@@ -275,9 +280,9 @@ export function CredentialCard({
                                 <div>
                                     <p className="text-xs text-ink-secondary">URL / Repositório</p>
                                     <a
-                                        href={credential.url}
+                                        href={normalizeUrl(credential.url)}
                                         target="_blank"
-                                        rel={credential.url}
+                                        rel="noopener noreferrer"
                                         className="mt-0.5 block truncate text-sm text-link hover:text-link-hover"
                                     >
                                         {credential.url}

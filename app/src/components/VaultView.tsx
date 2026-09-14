@@ -288,9 +288,9 @@ export function VaultView({onLock}: VaultViewProps) {
             />
 
             <main className="flex-1 overflow-y-auto">
-                <div className="mx-auto max-w-5xl px-4 py-6">
+                <div className="mx-auto max-w-7xl px-4 py-6">
                     {/* Barra superior */}
-                    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-1.5 text-sm text-ink-muted">
                             <span>Vault9</span>
                             <span>/</span>
@@ -337,95 +337,97 @@ export function VaultView({onLock}: VaultViewProps) {
                         ))}
                     </div>
 
-                    {/* Filtros de tipo + ordenação */}
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                        {typesInScope.length > 0 && (
-                            <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-                                <button
-                                    onClick={() => setSelectedType(ALL)}
-                                    className={chipClass(selectedType === ALL)}
-                                >
-                                    Todos os tipos {projectFiltered.length}
-                                </button>
-                                {typesInScope.map(({label, count}) => (
+                    <div className="m-auto max-w-5xl">
+                        {/* Filtros de tipo + ordenação */}
+                        <div className="m-auto max-w-5xl mb-4 flex flex-wrap items-center justify-between gap-2">
+                            {typesInScope.length > 0 && (
+                                <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
                                     <button
-                                        key={label}
-                                        onClick={() => setSelectedType(label)}
-                                        className={chipClass(selectedType.toLowerCase() === label.toLowerCase())}
+                                        onClick={() => setSelectedType(ALL)}
+                                        className={chipClass(selectedType === ALL)}
                                     >
-                                        {label} {count}
+                                        Todos os tipos {projectFiltered.length}
                                     </button>
-                                ))}
+                                    {typesInScope.map(({label, count}) => (
+                                        <button
+                                            key={label}
+                                            onClick={() => setSelectedType(label)}
+                                            className={chipClass(selectedType.toLowerCase() === label.toLowerCase())}
+                                        >
+                                            {label} {count}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as SortBy)}
+                                className="rounded-md border border-surface-card-border bg-surface-token px-2 py-1.5 text-xs text-ink-secondary outline-none focus:border-accent/60"
+                            >
+                                <option value="recent">Ordenar por: Mais recentes</option>
+                                <option value="name">Ordenar por: Nome A-Z</option>
+                            </select>
+                        </div>
+
+                        <p className="m-auto max-w-5xl mb-3 text-xs text-ink-muted">
+                            Listando {visibleCredentials.length} de {projectFiltered.length} credenciais
+                        </p>
+
+                        {adding && (
+                            <div className="mb-4">
+                                <CredentialForm
+                                    projects={projects}
+                                    fixedProjectId={fixedProjectId}
+                                    typeSuggestions={distinctTypes(credentials)}
+                                    onSubmit={handleAdd}
+                                    onCancel={() => setAdding(false)}
+                                />
                             </div>
                         )}
 
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value as SortBy)}
-                            className="rounded-md border border-surface-card-border bg-surface-token px-2 py-1.5 text-xs text-ink-secondary outline-none focus:border-accent/60"
-                        >
-                            <option value="recent">Ordenar por: Mais recentes</option>
-                            <option value="name">Ordenar por: Nome A-Z</option>
-                        </select>
+                        {loading ? (
+                            <p className="text-ink-muted">Carregando...</p>
+                        ) : (
+                            <div className="space-y-3">
+                                {visibleCredentials.map((cred) =>
+                                        editingId === cred.id ? (
+                                            <CredentialForm
+                                                key={cred.id}
+                                                initial={cred}
+                                                projects={projects}
+                                                fixedProjectId={null}
+                                                typeSuggestions={distinctTypes(credentials)}
+                                                onSubmit={(input) => handleUpdate(cred.id, input)}
+                                                onCancel={() => setEditingId(null)}
+                                            />
+                                        ) : (
+                                            <CredentialCard
+                                                key={cred.id}
+                                                credential={cred}
+                                                projectName={projects.find((p) => p.id === cred.projectId)?.name}
+                                                revealed={revealedId === cred.id}
+                                                copied={copiedId === cred.id}
+                                                onToggleReveal={() =>
+                                                    setRevealedId(revealedId === cred.id ? null : cred.id)
+                                                }
+                                                onCopyPassword={() => handleCopyPassword(cred.id, cred.credential)}
+                                                onEdit={() => setEditingId(cred.id)}
+                                                onDelete={() => handleDelete(cred.id)}
+                                            />
+                                        ),
+                                )}
+                                {visibleCredentials.length === 0 && !adding && (
+                                    <p className="text-ink-muted">Nenhuma credencial ainda.</p>
+                                )}
+                            </div>
+                        )}
+
+                        <p className="mt-8 flex items-center gap-1.5 text-xs text-ink-muted">
+                            <span className="h-1.5 w-1.5 rounded-full bg-success"/>
+                            Cofre local com criptografia AES-256 ponta a ponta
+                        </p>
                     </div>
-
-                    <p className="mb-3 text-xs text-ink-muted">
-                        Listando {visibleCredentials.length} de {projectFiltered.length} credenciais
-                    </p>
-
-                    {adding && (
-                        <div className="mb-4">
-                            <CredentialForm
-                                projects={projects}
-                                fixedProjectId={fixedProjectId}
-                                typeSuggestions={distinctTypes(credentials)}
-                                onSubmit={handleAdd}
-                                onCancel={() => setAdding(false)}
-                            />
-                        </div>
-                    )}
-
-                    {loading ? (
-                        <p className="text-ink-muted">Carregando...</p>
-                    ) : (
-                        <div className="space-y-3">
-                            {visibleCredentials.map((cred) =>
-                                    editingId === cred.id ? (
-                                        <CredentialForm
-                                            key={cred.id}
-                                            initial={cred}
-                                            projects={projects}
-                                            fixedProjectId={null}
-                                            typeSuggestions={distinctTypes(credentials)}
-                                            onSubmit={(input) => handleUpdate(cred.id, input)}
-                                            onCancel={() => setEditingId(null)}
-                                        />
-                                    ) : (
-                                        <CredentialCard
-                                            key={cred.id}
-                                            credential={cred}
-                                            projectName={projects.find((p) => p.id === cred.projectId)?.name}
-                                            revealed={revealedId === cred.id}
-                                            copied={copiedId === cred.id}
-                                            onToggleReveal={() =>
-                                                setRevealedId(revealedId === cred.id ? null : cred.id)
-                                            }
-                                            onCopyPassword={() => handleCopyPassword(cred.id, cred.credential)}
-                                            onEdit={() => setEditingId(cred.id)}
-                                            onDelete={() => handleDelete(cred.id)}
-                                        />
-                                    ),
-                            )}
-                            {visibleCredentials.length === 0 && !adding && (
-                                <p className="text-ink-muted">Nenhuma credencial ainda.</p>
-                            )}
-                        </div>
-                    )}
-
-                    <p className="mt-8 flex items-center gap-1.5 text-xs text-ink-muted">
-                        <span className="h-1.5 w-1.5 rounded-full bg-success"/>
-                        Cofre local com criptografia AES-256 ponta a ponta
-                    </p>
                 </div>
             </main>
         </div>

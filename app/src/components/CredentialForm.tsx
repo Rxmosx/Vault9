@@ -66,16 +66,27 @@ function strengthLabel(bits: number): { label: string; level: number; colorClass
     return { label: 'Muito Forte', level: 4, colorClass: 'bg-success' }
 }
 
-const GENERATED_LENGTH = 20
 const GENERATED_CHARSET =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+'
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*-_=+'
 
-function generateStrongCredential(): string {
-    const bytes = crypto.getRandomValues(new Uint32Array(GENERATED_LENGTH))
+function generateStrongCredential(size: number): string {
+    if (size > 256) {
+        throw new Error("Bits can not be greater than 256")
+    }
+
+    const bytes = crypto.getRandomValues(new Uint32Array(size))
+
     return Array.from(bytes, (n) => GENERATED_CHARSET[n % GENERATED_CHARSET.length]).join('')
 }
 
 const NOTES_MAX_LENGTH = 240
+const CHARSET_BITS_PER_CHAR = Math.log2(GENERATED_CHARSET.length) // ~6.55 bits/caractere, dado o charset de 94 símbolos
+
+const CREDENTIAL_BITS_OPTIONS = [32, 64, 128, 192, 256] as const
+
+function bitsToLength(bits: number): number {
+    return Math.ceil(bits / CHARSET_BITS_PER_CHAR)
+}
 
 const inputClass =
     'w-full rounded-md border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary ' +
@@ -84,20 +95,20 @@ const inputClass =
 const labelClass = 'mb-1 block text-xs font-medium tracking-wide text-ink-secondary'
 
 export function CredentialForm({
-                                   initial,
-                                   projects,
-                                   fixedProjectId,
-                                   typeSuggestions,
-                                   onSubmit,
-                                   onCancel,
-                                   onDelete,
-                               }: CredentialFormProps) {
+   initial,
+   projects,
+   fixedProjectId,
+   typeSuggestions,
+   onSubmit,
+   onCancel,
+   onDelete,
+}: CredentialFormProps) {
     const [values, setValues] = useState<CredentialInput>(
         valuesFromCredential(initial, fixedProjectId),
     )
     const [busy, setBusy] = useState(false)
     const [revealed, setRevealed] = useState(false)
-
+    const [credentialBits, setCredentialBits] = useState<number>(128)
     function update<K extends keyof CredentialInput>(
         key: K,
         value: CredentialInput[K],
@@ -199,11 +210,22 @@ export function CredentialForm({
                         <div className="flex items-center gap-3 text-xs">
                             <button
                                 type="button"
-                                onClick={() => update('credential', generateStrongCredential())}
+                                onClick={() => update('credential', generateStrongCredential(bitsToLength(credentialBits)))}
                                 className="text-accent hover:text-accent-strong"
                             >
-                                Gerar forte
+                                Gerar credencial
                             </button>
+                            <select
+                                className="rounded-md border border-surface-card-border bg-surface-token px-2 py-1 text-xs text-ink-primary outline-none focus:border-accent/60"
+                                value={credentialBits}
+                                onChange={(e) => setCredentialBits(Number(e.target.value))}
+                            >
+                                {CREDENTIAL_BITS_OPTIONS.map((bits) => (
+                                    <option key={bits} value={bits}>
+                                        {bits} bits
+                                    </option>
+                                ))}
+                            </select>
                             <span className="text-surface-card-border">|</span>
                             <button
                                 type="button"
