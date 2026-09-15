@@ -176,7 +176,6 @@ export function CredentialCard({
 
     const summaryParts = [
         credential.username && `Usuário: ${credential.username}`,
-        credential.url && `URL: ${credential.url}`,
         formatRelativeUpdated(credential.updatedAt),
     ].filter(Boolean) as string[]
 
