@@ -23,6 +23,17 @@ interface SidebarProps {
     onCreateProject: (event: FormEvent) => void
     onDeleteProject: (id: string) => void | Promise<void>
     onLock: () => void
+    onOpenSettings: () => void
+}
+
+function GearIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
+             strokeLinejoin="round" className={className}>
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+        </svg>
+    )
 }
 
 function LockIcon({ className }: { className?: string }) {
@@ -64,7 +75,7 @@ function PlusIcon({ className }: { className?: string }) {
 }
 
 const itemClass = (active: boolean) =>
-    `flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+    `flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors ${
         active
             ? 'bg-accent text-white'
             : 'text-ink-secondary hover:bg-surface-card hover:text-ink-primary'
@@ -92,7 +103,9 @@ export function Sidebar({
     onCreateProject,
     onDeleteProject,
     onLock,
+    onOpenSettings,
 }: SidebarProps) {
+
     const [projectFilter, setProjectFilter] = useState('')
     const [inlineConfirmId, setInlineConfirmId] = useState<string | null>(null)
     const [modalProjectId, setModalProjectId] = useState<string | null>(null)
@@ -133,7 +146,7 @@ export function Sidebar({
             <aside className="flex w-72 shrink-0 flex-col border-r border-surface-card-border bg-surface-page-deep">
                 <div className="space-y-3 border-b border-surface-card-border p-4">
                     <div className="flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-white">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-accent text-white">
                       <LockIcon className="h-4.5 w-4.5" />
                     </span>
                         <h1 className="text-lg font-semibold text-ink-primary">Vault9</h1>
@@ -151,7 +164,7 @@ export function Sidebar({
                             placeholder="Filtrar projetos..."
                             value={projectFilter}
                             onChange={(e) => setProjectFilter(e.target.value)}
-                            className="w-full rounded-md border border-surface-card-border bg-surface-token py-1.5 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent/60"
+                            className="w-full border border-surface-card-border bg-surface-token py-1.5 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent/60"
                         />
                     </div>
                 </div>
@@ -241,14 +254,14 @@ export function Sidebar({
                                 <button
                                     type="button"
                                     onClick={onCancelCreatingProject}
-                                    className="rounded-md border border-surface-card-border px-2 py-1 text-xs text-ink-secondary hover:bg-surface-card"
+                                    className="border border-surface-card-border px-2 py-1 text-xs text-ink-secondary hover:bg-surface-card"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={projectBusy}
-                                    className="rounded-md bg-accent px-4 py-1 text-xs text-white hover:bg-accent-strong disabled:opacity-50"
+                                    className="bg-accent px-4 py-1 text-xs text-white hover:bg-accent-strong disabled:opacity-50"
                                 >
                                     CREATE
                                 </button>
@@ -257,10 +270,17 @@ export function Sidebar({
                     )}
                 </nav>
 
-                <div className="border-t border-surface-card-border p-3">
+                <div className="space-y-1 border-t border-surface-card-border">
+                    <button
+                        onClick={onOpenSettings}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-secondary hover:bg-surface-card"
+                    >
+                        <GearIcon className="h-4 w-4" />
+                        Configurações
+                    </button>
                     <button
                         onClick={onLock}
-                        className="flex w-full items-center justify-center gap-2 rounded-md border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-card"
+                        className="flex w-full items-center justify-center gap-2 border border-surface-card-border px-4 py-2 text-sm text-ink-secondary hover:bg-surface-card"
                     >
                         <LockIcon className="h-4 w-4" />
                         Bloquear Cofre

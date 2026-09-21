@@ -8,10 +8,13 @@ import type {KdfParams} from "../../../../packages/crypto-core/kdf";
 
 export const VAULT_META_ID = 'singleton'
 
+export const DEFAULT_IDLE_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutos
+
 export interface VaultMetaRecord {
   id: typeof VAULT_META_ID
   salt: Bytes
   kdfParams: KdfParams
+  idleTimeoutMs: number
   /** Ciphertext of a known plaintext; decrypting it with the derived key
    * confirms the master password without ever persisting the password. */
   verifier: Bytes

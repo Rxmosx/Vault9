@@ -17,6 +17,7 @@ import {ALL_PROJECTS as ALL, UNASSIGNED_PROJECT as UNASSIGNED, Sidebar} from './
 
 interface VaultViewProps {
     onLock: () => void
+    onOpenSettings: () => void
 }
 
 type SortBy = 'recent' | 'name'
@@ -61,14 +62,14 @@ function TagStatIcon({className}: { className?: string }) {
     )
 }
 
-function ShieldStatIcon({className}: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
-             strokeLinejoin="round" className={className}>
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
-        </svg>
-    )
-}
+// function ShieldStatIcon({className}: { className?: string }) {
+//     return (
+//         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
+//              strokeLinejoin="round" className={className}>
+//             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+//         </svg>
+//     )
+// }
 
 function belongsToProject(
     cred: Credential,
@@ -123,7 +124,8 @@ function sortCredentials(creds: Credential[], sortBy: SortBy): Credential[] {
     return creds
 }
 
-export function VaultView({onLock}: VaultViewProps) {
+export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
+
     const [credentials, setCredentials] = useState<Credential[]>([])
     const [projects, setProjects] = useState<Project[]>([])
     const [loading, setLoading] = useState(true)
@@ -269,7 +271,6 @@ export function VaultView({onLock}: VaultViewProps) {
         {label: 'Total Armazenado', value: `${projectFiltered.length}`, sub: 'segredos', Icon: KeyStatIcon},
         {label: 'Projetos', value: `${projects.length}`, sub: 'ativos', Icon: FolderStatIcon},
         {label: 'Tipos diferentes', value: `${typesInScope.length}`, sub: 'no escopo atual', Icon: TagStatIcon},
-        {label: 'Cifragem do Cofre', value: 'AES-256', sub: 'Segura', Icon: ShieldStatIcon},
     ]
 
     return (
@@ -294,9 +295,10 @@ export function VaultView({onLock}: VaultViewProps) {
                 onNewProjectNameChange={setNewProjectName}
                 onCreateProject={handleCreateProject}
                 onLock={onLock}
+                onOpenSettings={onOpenSettings}
             />
 
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto justify-center">
                 <div className="mx-auto max-w-7xl px-4 py-6">
                     {/* Barra superior */}
                     <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
@@ -319,7 +321,7 @@ export function VaultView({onLock}: VaultViewProps) {
                             {!adding && (
                                 <button
                                     onClick={() => setAdding(true)}
-                                    className="rounded-md bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent-strong"
+                                    className="bg-accent px-3 shadow-2xl shadow-accent-strong py-1.5 text-sm text-white hover:bg-accent-strong"
                                 >
                                     + Nova credencial
                                 </button>
@@ -328,7 +330,7 @@ export function VaultView({onLock}: VaultViewProps) {
                     </div>
 
                     {/* Cards de estatística */}
-                    <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    <div className="mb-6 grid grid-cols-2 gap-10 lg:grid-cols-3 ">
                         {statCards.map(({label, value, sub, Icon}) => (
                             <div
                                 key={label}

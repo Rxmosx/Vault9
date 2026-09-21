@@ -49,6 +49,9 @@ button:disabled {
   --color-ink-muted: #6b7280;
 
   --animate-fade-in: fade-in 200ms ease-out;
+
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 @keyframes fade-in {
@@ -67,6 +70,7 @@ button:disabled {
 }
 
 body {
+  font-family: var(--font-sans);
   margin: 0;
   background-color: #0a0a0a;
   color: #e5e5e5;
