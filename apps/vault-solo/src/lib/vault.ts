@@ -1,5 +1,5 @@
-import { encryptString, decryptToString } from './crypto/aes'
-import {deriveKey, KDF_PARAMS} from './crypto/kdf'
+import { encryptString, decryptToString } from '../../../../packages/crypto-core/aes'
+import {deriveKey, KDF_PARAMS} from '../../../../packages/crypto-core/kdf'
 import { db, VAULT_META_ID, type CredentialRecord, type ProjectRecord, type VaultMetaRecord} from './db'
 
 // Known plaintext used only to confirm the master password on unlock — it
@@ -168,6 +168,10 @@ export async function createProject(name: string): Promise<Project> {
   await db.projects.put({ id, ciphertext, iv, createdAt: now })
 
   return { id, name, createdAt: now }
+}
+
+export async function deleteProject(id: string) {
+  await db.projects.delete(id)
 }
 
 export async function listCredentials(): Promise<Credential[]> {

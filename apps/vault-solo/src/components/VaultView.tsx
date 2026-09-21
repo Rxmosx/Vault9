@@ -9,7 +9,7 @@ import {
     updateCredential,
     type Credential,
     type CredentialInput,
-    type Project,
+    type Project, deleteProject,
 } from '../lib/vault'
 import {CredentialForm} from './CredentialForm'
 import {CredentialCard} from './CredentialCard'
@@ -216,8 +216,10 @@ export function VaultView({onLock}: VaultViewProps) {
     }
 
     async function handleDelete(id: string) {
-        if (!confirm('Excluir esta credencial?')) return
         await deleteCredential(id)
+        setEditingId((current) => (current === id ? null : current))
+        setRevealedId((current) => (current === id ? null : current))
+        setCopiedId((current) => (current === id ? null : current))
         await refresh()
     }
 
@@ -235,6 +237,12 @@ export function VaultView({onLock}: VaultViewProps) {
         } finally {
             setProjectBusy(false)
         }
+    }
+
+    async function handleDeleteProject(projectId: string) {
+        await deleteProject(projectId)
+        setSelectedProjectId((current) => (current === projectId ? ALL : current))
+        await refresh()
     }
 
     async function handleCopyPassword(id: string, password: string) {
@@ -274,6 +282,7 @@ export function VaultView({onLock}: VaultViewProps) {
                 unassignedCount={unassignedCount}
                 projectCounts={projectCounts}
                 creatingProject={creatingProject}
+                onDeleteProject={handleDeleteProject}
                 newProjectName={newProjectName}
                 projectBusy={projectBusy}
                 onSelectProject={selectProject}

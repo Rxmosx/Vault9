@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { Bytes } from './crypto/types'
-import type {KdfParams} from "./crypto/kdf";
+import type { Bytes } from '../../../../packages/crypto-core/types'
+import type {KdfParams} from "../../../../packages/crypto-core/kdf";
 
 // Everything stored here is ciphertext + the metadata needed to decrypt it
 // (IV, Argon2 salt). No plaintext credential data or master password ever

@@ -147,16 +147,16 @@ function normalizeUrl(url: string): string {
     return /^https?:\/\//i.test(url) ? url : `https://${url}`
 }
 
-const badgeClass =
+export const badgeClass =
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border border-surface-card-border bg-surface-card px-2.5 py-1 text-xs text-ink-secondary'
 
-const projectBadgeClass =
+export const projectBadgeClass =
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border border-accent/30 bg-accent/15 px-2.5 py-1 text-xs text-accent'
 
-const actionBtn =
+export const actionBtn =
     'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-surface-card-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary hover:border-ink-muted hover:bg-surface-card transition-colors'
 
-const dangerBtn =
+export const dangerBtn =
     'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-danger/40 bg-danger-bg px-2.5 py-1.5 text-xs font-medium text-danger-strong hover:bg-danger/20 transition-colors'
 
 // const successBtn =

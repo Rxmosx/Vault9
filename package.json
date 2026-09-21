@@ -1,0 +1,9 @@
+
+{
+  "name": "vault9",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
