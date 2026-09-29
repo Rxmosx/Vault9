@@ -67,7 +67,7 @@ function strengthLabel(bits: number): { label: string; level: number; colorClass
 }
 
 const GENERATED_CHARSET =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*-_=+'
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 function generateStrongCredential(size: number): string {
     if (size > 256) {
