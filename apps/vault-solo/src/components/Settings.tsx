@@ -102,7 +102,7 @@ function UploadIcon({ className }: { className?: string }) {
 }
 
 const categoryItemClass = (active: boolean) =>
-    `flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+    `flex w-full items-center gap-2 rounded-control px-3 py-2 text-left text-sm transition-colors ${
         active
             ? 'bg-accent/15 text-accent'
             : 'text-ink-secondary hover:bg-surface-card hover:text-ink-primary'
@@ -172,7 +172,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
     }
 
     return (
-        <div className="grid h-svh grid-cols-[0.25fr_1fr] bg-surface-page px-35 py-35 text-ink-primary">
+        <div className="grid h-svh grid-cols-[14rem_1fr] bg-surface-page px-6 py-10 md:px-16 lg:px-32 text-ink-primary">
             <aside className="flex flex-col">
                 <div className="border-surface-card-border p-4">
                     <button
@@ -185,8 +185,8 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                 </div>
 
                 <nav className="flex-1 space-y-1 p-3 pt-10">
-                    <p className="px-3 pb-1 pt-1 text-xs font-medium tracking-wide text-ink-muted">
-                        COFRE & CHAVES
+                    <p className="px-3 pb-1 pt-1 text-sm font-medium text-ink-muted">
+                        Cofre
                     </p>
                     <button
                         onClick={() => setCategory('security')}
@@ -206,8 +206,8 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                         Dados
                     </button>
 
-                    <p className="px-3 pb-1 pt-4 text-xs font-medium tracking-wide text-ink-muted">
-                        SOBRE
+                    <p className="px-3 pb-1 pt-4 text-sm font-medium text-ink-muted">
+                        Sobre
                     </p>
                     <button
                         onClick={() => setCategory('general')}
@@ -219,7 +219,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                 </nav>
             </aside>
 
-            <main className="ml-15 overflow-y-auto">
+            <main className="ml-10 overflow-y-auto">
                 <div className="max-w-4xl">
                     {category === 'security' && (
                         <section>
@@ -228,9 +228,9 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                 Controles de como e quando o cofre se protege automaticamente.
                             </p>
 
-                            <div className="mt-6 overflow-hidden rounded-xl border border-surface-card-border bg-surface-card">
+                            <div className="mt-6 overflow-hidden rounded-control border border-surface-card-border bg-surface-card">
                                 <div className="flex items-center gap-2 border-b border-surface-card-border px-4 py-3">
-                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent">
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-accent/15 text-accent">
                                         <LockClockIcon className="h-4 w-4" />
                                     </span>
                                     <h3 className="text-sm font-medium text-ink-primary">Bloqueio automático</h3>
@@ -249,7 +249,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                     <select
                                         value={idleTimeoutMs}
                                         onChange={(e) => onChangeIdleTimeout(Number(e.target.value))}
-                                        className="w-full shrink-0 rounded-md border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary outline-none focus:border-accent/60 sm:w-48"
+                                        className="w-full shrink-0 rounded-control border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary outline-none focus:border-accent sm:w-48"
                                     >
                                         {IDLE_TIMEOUT_OPTIONS.map((opt) => (
                                             <option key={opt.value} value={opt.value}>
@@ -270,9 +270,9 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                             </p>
 
                             {/* Backup */}
-                            <div className="mt-6 overflow-hidden rounded-xl border border-surface-card-border bg-surface-card">
+                            <div className="mt-6 overflow-hidden rounded-control border border-surface-card-border bg-surface-card">
                                 <div className="flex items-center gap-2 border-b border-surface-card-border px-4 py-3">
-                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/15 text-accent">
+                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-accent/15 text-accent">
                                         <DatabaseIcon className="h-4 w-4" />
                                     </span>
                                     <h3 className="text-sm font-medium text-ink-primary">Backup e restauração</h3>
@@ -289,7 +289,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                     <button
                                         onClick={handleExport}
                                         disabled={exporting}
-                                        className="flex shrink-0 items-center gap-1.5 rounded-md border border-surface-card-border px-3 py-2 text-sm text-ink-primary hover:bg-surface-token disabled:opacity-50"
+                                        className="flex shrink-0 items-center gap-1.5 rounded-control border border-surface-card-border px-3 py-2 text-sm text-ink-primary hover:bg-surface-token disabled:opacity-50"
                                     >
                                         <DownloadIcon className="h-4 w-4" />
                                         {exporting ? 'Exportando...' : 'Exportar .enc'}
@@ -323,7 +323,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                         <button
                                             onClick={() => fileInputRef.current?.click()}
                                             disabled={importing}
-                                            className="flex items-center gap-1.5 rounded-md border border-surface-card-border px-3 py-2 text-sm text-ink-primary hover:bg-surface-token disabled:opacity-50"
+                                            className="flex items-center gap-1.5 rounded-control border border-surface-card-border px-3 py-2 text-sm text-ink-primary hover:bg-surface-token disabled:opacity-50"
                                         >
                                             <UploadIcon className="h-4 w-4" />
                                             {importing ? 'Importando...' : 'Escolher arquivo...'}
@@ -333,7 +333,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                             </div>
 
                             {/* Tamanho */}
-                            <div className="mt-4 rounded-xl border border-surface-card-border bg-surface-card px-4 py-3">
+                            <div className="mt-4 rounded-control border border-surface-card-border bg-surface-card px-4 py-3">
                                 <p className="text-sm text-ink-secondary">
                                     Tamanho atual do cofre neste dispositivo:{' '}
                                     <span className="font-medium text-ink-primary">
@@ -343,7 +343,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                             </div>
 
                             {/* Danger Zone */}
-                            <div className="mt-6 overflow-hidden rounded-xl border border-danger/40">
+                            <div className="mt-6 overflow-hidden rounded-control border border-danger/40">
                                 <div className="border-b border-danger/40 bg-danger-bg px-4 py-3">
                                     <h3 className="text-sm font-medium text-danger-strong">Zona de risco</h3>
                                 </div>
@@ -360,7 +360,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                     </div>
                                     <button
                                         onClick={() => setShowResetConfirm(true)}
-                                        className="shrink-0 rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm text-danger-strong hover:bg-danger/20"
+                                        className="shrink-0 rounded-control border border-danger/40 bg-danger-bg px-3 py-2 text-sm text-danger-strong hover:bg-danger/20"
                                     >
                                         Redefinir cofre...
                                     </button>
@@ -376,7 +376,7 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                                 Sobre este aplicativo.
                             </p>
 
-                            <div className="mt-6 overflow-hidden rounded-xl border border-surface-card-border bg-surface-card">
+                            <div className="mt-6 overflow-hidden rounded-control border border-surface-card-border bg-surface-card">
                                 <div className="space-y-2 px-4 py-4 text-sm text-ink-secondary">
                                     <p>
                                         <span className="text-ink-primary">Vault9</span> v{__APP_VERSION__}
@@ -397,11 +397,11 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
             {showResetConfirm && (
                 <div
                     onClick={() => !resetting && setShowResetConfirm(false)}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full max-w-sm rounded-2xl border border-danger/40 bg-surface-card p-5 shadow-2xl"
+                        className="w-full max-w-sm rounded-control border border-danger/40 bg-surface-card p-5"
                     >
                         <h2 className="text-lg font-semibold text-ink-primary">Redefinir cofre?</h2>
                         <p className="mt-2 text-sm text-ink-secondary">
@@ -415,20 +415,20 @@ export function Settings({ idleTimeoutMs, onChangeIdleTimeout, onBack, onLocked 
                             autoFocus
                             value={resetWord}
                             onChange={(e) => setResetWord(e.target.value)}
-                            className="mt-2 w-full rounded-md border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary outline-none focus:border-danger/60"
+                            className="mt-2 w-full rounded-control border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary outline-none focus:border-danger/60"
                         />
                         <div className="mt-5 flex justify-end gap-2">
                             <button
                                 onClick={() => setShowResetConfirm(false)}
                                 disabled={resetting}
-                                className="rounded-md border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-page disabled:opacity-50"
+                                className="rounded-control border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-page disabled:opacity-50"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleConfirmReset}
                                 disabled={resetWord !== RESET_CONFIRM_WORD || resetting}
-                                className="rounded-md bg-danger px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-strong disabled:opacity-40"
+                                className="rounded-control bg-danger px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-strong disabled:opacity-40"
                             >
                                 {resetting ? 'Redefinindo...' : 'Redefinir cofre'}
                             </button>

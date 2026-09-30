@@ -89,10 +89,10 @@ function bitsToLength(bits: number): number {
 }
 
 const inputClass =
-    'w-full rounded-md border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary ' +
-    'placeholder:text-ink-muted outline-none transition-colors focus:border-accent/60 focus:ring-1 focus:ring-accent/40'
+    'w-full rounded-control border border-surface-card-border bg-surface-token px-3 py-2 text-sm text-ink-primary ' +
+    'placeholder:text-ink-muted outline-none transition-colors focus:border-accent'
 
-const labelClass = 'mb-1 block text-xs font-medium tracking-wide text-ink-secondary'
+const labelClass = 'mb-1 block text-xs font-medium text-ink-secondary'
 
 export function CredentialForm({
    initial,
@@ -141,11 +141,11 @@ export function CredentialForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className="animate-fade-in rounded-xl border border-surface-card-border bg-surface-card"
+            className="animate-fade-in rounded-control border border-surface-card-border bg-surface-card"
         >
             {/* Cabeçalho */}
             <div className="flex items-start gap-3 p-4">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-ink-muted bg-surface-card-border text-ink-muted/95">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-ink-muted bg-surface-card-border text-ink-muted/95">
                   <KeyIcon className="h-4 w-4" />
                 </span>
                 <div>
@@ -216,7 +216,7 @@ export function CredentialForm({
                                 Gerar credencial
                             </button>
                             <select
-                                className="rounded-md border border-surface-card-border bg-surface-token px-2 py-1 text-xs text-ink-primary outline-none focus:border-accent/60"
+                                className="rounded-control border border-surface-card-border bg-surface-token px-2 py-1 text-xs text-ink-primary outline-none focus:border-accent"
                                 value={credentialBits}
                                 onChange={(e) => setCredentialBits(Number(e.target.value))}
                             >
@@ -330,14 +330,14 @@ export function CredentialForm({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-md border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-card-border/40"
+                        className="rounded-control border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-card-border/40"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={busy}
-                        className="rounded-md bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent-strong disabled:opacity-50"
+                        className="rounded-control bg-accent px-3 py-1.5 text-sm font-medium text-on-accent hover:bg-accent-strong disabled:opacity-50"
                     >
                         {busy ? 'Salvando...' : initial ? 'Salvar alterações' : 'Salvar'}
                     </button>

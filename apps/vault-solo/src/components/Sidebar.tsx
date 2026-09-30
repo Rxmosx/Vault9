@@ -74,17 +74,25 @@ function PlusIcon({ className }: { className?: string }) {
     )
 }
 
+function MoreIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+            <circle cx="5" cy="12" r="1.8" />
+            <circle cx="12" cy="12" r="1.8" />
+            <circle cx="19" cy="12" r="1.8" />
+        </svg>
+    )
+}
+
 const itemClass = (active: boolean) =>
-    `flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors ${
+    `flex w-full items-center justify-between gap-2 border-l-2 px-3 py-2 text-left text-sm transition-colors ${
         active
-            ? 'bg-accent text-white'
-            : 'text-ink-secondary hover:bg-surface-card hover:text-ink-primary'
+            ? 'border-accent bg-surface-card font-medium text-ink-primary'
+            : 'border-transparent text-ink-secondary hover:bg-surface-card hover:text-ink-primary'
     }`
 
 const countBadgeClass = (active: boolean) =>
-    `shrink-0 rounded-full px-2 py-0.5 text-xs ${
-        active ? 'bg-white/20 text-white' : 'bg-surface-card-border text-ink-muted'
-    }`
+    `shrink-0 font-mono text-xs ${active ? 'text-accent' : 'text-ink-muted'}`
 
 export function Sidebar({
     projects,
@@ -144,44 +152,40 @@ export function Sidebar({
     return (
         <>
             <aside className="flex w-72 shrink-0 flex-col border-r border-surface-card-border bg-surface-page-deep">
-                <div className="space-y-3 border-b border-surface-card-border p-4">
-                    <div className="flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-accent text-white">
-                      <LockIcon className="h-4.5 w-4.5" />
+                <div className="flex items-center gap-2.5 border-b border-surface-card-border p-4">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border border-accent text-accent">
+                        <LockIcon className="h-4 w-4" />
                     </span>
-                        <h1 className="text-lg font-semibold text-ink-primary">Vault9</h1>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-1 text-xs text-success">
-                    <span className="h-1.5 w-1.5 rounded-full bg-success" />
-                        AES-256
-                    </span>
+                    <h1 className="text-lg font-semibold tracking-tight text-ink-primary">Vault9</h1>
+                    <span className="ml-auto text-xs text-ink-muted">AES-256</span>
                 </div>
 
                 <div className="border-b border-surface-card-border p-3">
                     <div className="relative">
                         <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" />
                         <input
-                            placeholder="Filtrar projetos..."
+                            placeholder="Filtrar projetos" aria-label="Filtrar projetos"
                             value={projectFilter}
                             onChange={(e) => setProjectFilter(e.target.value)}
-                            className="w-full border border-surface-card-border bg-surface-token py-1.5 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent/60"
+                            className="w-full rounded-control border border-surface-card-border bg-surface-token py-1.5 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent"
                         />
                     </div>
                 </div>
 
                 <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
-                    <p className="relative mb-5 flex w-full justify-between px-3 pb-1 text-xs font-medium tracking-wide text-ink-muted">
-                        PROJETOS & AMBIENTES
-
+                    <div className="mb-2 flex items-center justify-between px-3">
+                        <p className="text-sm font-medium text-ink-muted">Projetos</p>
                         {!creatingProject && (
                             <button
                                 onClick={onStartCreatingProject}
-                                className="absolute right-0 flex items-center gap-2 rounded-full bg-surface-card-border px-0.5 py-0.5 text-left text-sm text-ink-muted hover:bg-surface-card hover:text-ink-secondary"
+                                aria-label="Novo projeto"
+                                title="Novo projeto"
+                                className="flex h-6 w-6 items-center justify-center rounded-control text-ink-muted transition-colors hover:bg-surface-card hover:text-ink-primary"
                             >
-                                <PlusIcon className="h-4.5 w-4.5 rounded-full text-ink-muted" />
+                                <PlusIcon className="h-4 w-4" />
                             </button>
                         )}
-                    </p>
+                    </div>
 
                     <button
                         onClick={() => onSelectProject(ALL_PROJECTS)}
@@ -189,27 +193,36 @@ export function Sidebar({
                     >
                         <span className="flex min-w-0 items-center gap-2 truncate">
                           <FolderIcon className="h-4 w-4 shrink-0" />
-                          Todos os Projetos
+                          Todos os projetos
                         </span>
                         <span className={countBadgeClass(selectedProjectId === ALL_PROJECTS)}>{totalCount}</span>
                     </button>
 
                     {filteredProjects.map((project) => (
                         <Fragment key={project.id}>
-                            <button
-                                onClick={() => onSelectProject(project.id)}
-                                onContextMenu={(e) => handleRightClickOnProject(project.id, e)}
-                                className={itemClass(selectedProjectId === project.id)}
-                            >
-                                <span className="min-w-0 truncate">{project.name}</span>
-                                <span className={countBadgeClass(selectedProjectId === project.id)}>
-                                  {projectCounts.get(project.id) ?? 0}
-                                </span>
-                            </button>
+                            <div className="group relative">
+                                <button
+                                    onClick={() => onSelectProject(project.id)}
+                                    onContextMenu={(e) => handleRightClickOnProject(project.id, e)}
+                                    className={itemClass(selectedProjectId === project.id)}
+                                >
+                                    <span className="min-w-0 truncate">{project.name}</span>
+                                    <span className={`${countBadgeClass(selectedProjectId === project.id)} group-hover:invisible group-focus-within:invisible`}>
+                                        {projectCounts.get(project.id) ?? 0}
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => setInlineConfirmId((c) => (c === project.id ? null : project.id))}
+                                    aria-label={`Opções de ${project.name}`}
+                                    className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-control p-1 text-ink-muted hover:text-ink-primary focus-visible:block group-hover:block group-focus-within:block"
+                                >
+                                    <MoreIcon className="h-4 w-4" />
+                                </button>
+                            </div>
 
                             {inlineConfirmId === project.id && (
                                 <div className="flex items-center justify-between gap-2 px-1 py-1">
-                                    <span className="text-xs text-ink-muted">Excluir "{project.name}"?</span>
+                                    <span className="truncate text-xs text-ink-muted">Excluir "{project.name}"?</span>
                                     <div className="flex gap-1.5">
                                         <button
                                             onClick={() => openModal(project.id)}
@@ -219,7 +232,7 @@ export function Sidebar({
                                         </button>
                                         <button
                                             onClick={cancelInline}
-                                            className="rounded-md border border-surface-card-border px-2 py-1 text-xs text-ink-secondary hover:bg-surface-card"
+                                            className="rounded-control border border-surface-card-border px-2 py-1 text-xs text-ink-secondary hover:bg-surface-card"
                                         >
                                             Cancelar
                                         </button>
@@ -248,42 +261,42 @@ export function Sidebar({
                                 placeholder="Nome do projeto"
                                 value={newProjectName}
                                 onChange={(e) => onNewProjectNameChange(e.target.value)}
-                                className="w-full rounded-md border border-none px-2 py-1.5 text-sm text-ink-primary placeholder:text-ink-muted outline-none"
+                                className="w-full rounded-control border border-surface-card-border bg-surface-token px-2 py-1.5 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent"
                             />
-                            <div className="flex gap-2 float-right">
+                            <div className="flex justify-end gap-2">
                                 <button
                                     type="button"
                                     onClick={onCancelCreatingProject}
-                                    className="border border-surface-card-border px-2 py-1 text-xs text-ink-secondary hover:bg-surface-card"
+                                    className="rounded-control border border-surface-card-border px-2.5 py-1 text-xs text-ink-secondary hover:bg-surface-card"
                                 >
-                                    Cancel
+                                    Cancelar
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={projectBusy}
-                                    className="bg-accent px-4 py-1 text-xs text-white hover:bg-accent-strong disabled:opacity-50"
+                                    className="rounded-control bg-accent px-3 py-1 text-xs font-medium text-on-accent hover:bg-accent-strong disabled:opacity-50"
                                 >
-                                    CREATE
+                                    Criar
                                 </button>
                             </div>
                         </form>
                     )}
                 </nav>
 
-                <div className="space-y-1 border-t border-surface-card-border">
+                <div className="space-y-1 border-t border-surface-card-border p-3">
                     <button
                         onClick={onOpenSettings}
-                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-ink-secondary hover:bg-surface-card"
+                        className="flex w-full items-center gap-2 rounded-control px-3 py-2 text-sm text-ink-secondary transition-colors hover:bg-surface-card hover:text-ink-primary"
                     >
                         <GearIcon className="h-4 w-4" />
                         Configurações
                     </button>
                     <button
                         onClick={onLock}
-                        className="flex w-full items-center justify-center gap-2 border border-surface-card-border px-4 py-2 text-sm text-ink-secondary hover:bg-surface-card"
+                        className="flex w-full items-center gap-2 rounded-control px-3 py-2 text-sm text-ink-secondary transition-colors hover:bg-surface-card hover:text-ink-primary"
                     >
                         <LockIcon className="h-4 w-4" />
-                        Bloquear Cofre
+                        Bloquear cofre
                     </button>
                 </div>
             </aside>
@@ -292,11 +305,11 @@ export function Sidebar({
             {modalProjectId && (
                 <div
                     onClick={closeModal}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full max-w-sm rounded-2xl border border-surface-card-border bg-surface-card p-5 shadow-2xl"
+                        className="w-full max-w-sm rounded-control border border-surface-card-border bg-surface-card p-5"
                     >
                         <h2 className="text-lg font-semibold text-ink-primary">
                             Excluir "{modalProject?.name}"?
@@ -309,7 +322,7 @@ export function Sidebar({
                         <div className="mt-5 flex justify-end gap-2">
                             <button
                                 onClick={closeModal}
-                                className="rounded-md border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-page"
+                                className="rounded-control border border-surface-card-border px-3 py-1.5 text-sm text-ink-secondary hover:bg-surface-page"
                             >
                                 Cancelar
                             </button>

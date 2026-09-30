@@ -50,7 +50,7 @@ function App() {
     if (!ready) {
         return (
             <div className="flex min-h-svh items-center justify-center bg-surface-page">
-                <p className="text-ink-muted">Carregando...</p>
+                <p className="text-sm text-ink-muted">Abrindo o cofre...</p>
             </div>
         )
     }

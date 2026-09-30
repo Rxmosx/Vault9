@@ -148,19 +148,19 @@ function normalizeUrl(url: string): string {
 }
 
 export const badgeClass =
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border border-surface-card-border bg-surface-card px-2.5 py-1 text-xs text-ink-secondary'
+    'inline-flex shrink-0 items-center rounded-control border border-surface-card-border px-2 py-0.5 text-xs text-ink-secondary'
 
 export const projectBadgeClass =
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border border-accent/30 bg-accent/15 px-2.5 py-1 text-xs text-accent'
+    'inline-flex shrink-0 items-center rounded-control border border-accent/40 px-2 py-0.5 text-xs text-accent'
 
 export const actionBtn =
-    'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-surface-card-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary hover:border-ink-muted hover:bg-surface-card transition-colors'
+    'inline-flex shrink-0 items-center gap-1.5 rounded-control border border-surface-card-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-ink-muted hover:bg-surface-card hover:text-ink-primary'
 
 export const dangerBtn =
-    'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-danger/40 bg-danger-bg px-2.5 py-1.5 text-xs font-medium text-danger-strong hover:bg-danger/20 transition-colors'
+    'inline-flex shrink-0 items-center gap-1.5 rounded-control border border-danger/40 bg-danger-bg px-2.5 py-1.5 text-xs font-medium text-danger-strong transition-colors hover:bg-danger/20'
 
-// const successBtn =
-//     'inline-flex shrink-0 items-center gap-1.5 rounded-md border border-success/40 bg-success-bg px-2.5 py-1.5 text-xs font-medium text-success'
+const iconBtn =
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-control text-ink-muted transition-colors hover:bg-surface-card-border hover:text-ink-primary'
 
 export function CredentialCard({
    credential,
@@ -174,134 +174,109 @@ export function CredentialCard({
 }: CredentialCardProps) {
     const [expanded, setExpanded] = useState(false)
 
-    const summaryParts = [
-        credential.username && `Usuário: ${credential.username}`,
-        formatRelativeUpdated(credential.updatedAt),
-    ].filter(Boolean) as string[]
-
     return (
-        <div className="m-auto mb-6 max-w-5xl rounded-xl border border-surface-card-border bg-surface-card transition hover:border-ink-muted ">
-            {/* Cabeçalho — sempre visível, botões sempre visíveis (sem depender de hover/expand) */}
-            <div className="flex flex-wrap items-start justify-between gap-3 p-4 cursor-pointer" onClick={() => setExpanded((v) => !v)}>
-                <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-surface-card-border border-ink-muted text-ink-muted/95">
+        <div className="group border-b border-surface-card-border last:border-b-0">
+            <div className="flex items-center gap-2 px-2 py-2.5 transition-colors hover:bg-surface-card">
+                <button
+                    onClick={() => setExpanded((v) => !v)}
+                    aria-expanded={expanded}
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-control px-2 py-1 text-left"
+                >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-surface-card-border text-ink-secondary">
                         {renderTypeIcon(credential.type, 'h-4 w-4')}
                     </span>
-                    <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate font-medium text-ink-primary">{credential.title}</p>
+                    <span className="min-w-0">
+                        <span className="flex flex-wrap items-center gap-2">
+                            <span className="truncate font-medium text-ink-primary">{credential.title}</span>
                             {credential.type && <span className={badgeClass}>{credential.type}</span>}
                             {projectName && <span className={projectBadgeClass}>{projectName}</span>}
-                        </div>
-                        {summaryParts.length > 0 && (
-                            <p className="mt-1 truncate text-xs text-ink-muted">
-                                {summaryParts.join('  ·  ')}
-                            </p>
-                        )}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-ink-muted">
+                            {credential.username && (
+                                <span className="font-mono">{credential.username}</span>
+                            )}
+                            {credential.username && ' – '}
+                            {formatRelativeUpdated(credential.updatedAt)}
+                        </span>
+                    </span>
+                    <ChevronDownIcon
+                        className={`ml-auto h-4 w-4 shrink-0 text-ink-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+                    />
+                </button>
+
+                <div className="flex shrink-0 items-center gap-0.5">
+                    <div className="flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+                        <button onClick={onEdit} aria-label="Editar" title="Editar" className={iconBtn}>
+                            <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                            onClick={onDelete}
+                            aria-label="Excluir"
+                            title="Excluir"
+                            className={`${iconBtn} hover:!text-danger-strong`}
+                        >
+                            <TrashIcon className="h-4 w-4" />
+                        </button>
                     </div>
-                </div>
-
-                <div className="flex shrink-0 flex-wrap items-center gap-2">
-
                     <button
-                        onClick={
-                            (e) => {e.stopPropagation()
-                            onToggleReveal()
-                        }}
-                        aria-hidden={!expanded}
-                        tabIndex={expanded ? 0 : -1}
-                        className={`${actionBtn} transition-all duration-200 ease-in-out ${expanded
-                            ? 'opacity-100 scale-100' 
-                            : 'pointer-events-none w-0 scale-95 overflow-hidden p-0 opacity-0'
-                        }`}
+                        onClick={onCopyPassword}
+                        aria-label={copied ? 'Copiado' : 'Copiar segredo'}
+                        title="Copiar segredo"
+                        className={`${iconBtn} ${copied ? '!text-success' : ''}`}
                     >
-                        {revealed ? <EyeOffIcon className="h-3.5 w-3.5" /> : <EyeIcon className="h-3.5 w-3.5" />}
-                        {revealed ? 'Ocultar' : 'Mostrar'}
-                    </button>
-
-                    <button onClick={onEdit} className={actionBtn}>
-                        <PencilIcon className="h-3.5 w-3.5" />
-                        Editar
-                    </button>
-                    <button onClick={onDelete} className={dangerBtn}>
-                        <TrashIcon className="h-3.5 w-3.5" />
-                        Excluir
+                        {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
                     </button>
                 </div>
             </div>
 
-
-            <>
-                <button
-                    onClick={() => setExpanded((v) => !v)}
-                    aria-expanded={expanded}
-                    className="flex w-full items-center justify-between border-t border-surface-card-border px-4 py-2 text-xs text-ink-muted transition-colors hover:text-ink-secondary"
-                >
-                    <ChevronDownIcon
-                        className={`ml-auto h-4 w-4 shrink-0 transition-transform  ${expanded ? 'rotate-180' : ''}`}
-                    />
-                </button>
-
-                <div
-                    className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
-                        expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                    }`}
-                >
-                    <div className="overflow-hidden">
-
-                        <div className="space-y-3 px-4 pb-4">
-                            <div>
-                                <p className="mb-1.5 text-xs font-medium tracking-wide text-ink-muted">
-                                    CREDENCIAL CRIPTOGRAFADA
-                                </p>
-                                {/* Área do token: fundo mais escuro que o card, simulando bloco de terminal */}
-                                <div className="flex items-center justify-between gap-3 rounded-md border border-surface-token-border bg-surface-token px-3 py-2">
-                                    <span className="truncate font-mono text-sm text-ink-secondary">
-                                      {revealed ? credential.credential : '••••••••••••••••••••••••'}
-                                    </span>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            onCopyPassword()
-                                        }}
-                                        title="Copiar"
-                                        className="shrink-0 text-ink-muted transition-colors hover:text-ink-primary"
-                                    >
-                                        {copied ? <CheckIcon className="h-4 w-4 text-success" /> : <CopyIcon className="h-4 w-4"  />}
-                                    </button>
-                                </div>
+            <div
+                className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                    expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+            >
+                <div className="overflow-hidden" inert={!expanded}>
+                    <div className="space-y-4 px-5 pb-5 pt-2 sm:pl-16">
+                        <div>
+                            <p className="mb-1.5 text-sm text-ink-secondary">Segredo</p>
+                            <div className="flex items-center justify-between gap-3 rounded-control border border-surface-token-border bg-surface-token px-3 py-2">
+                                <span className="min-w-0 break-all font-mono text-sm text-ink-secondary">
+                                    {revealed ? credential.credential : '••••••••••••••••••••••••'}
+                                </span>
+                                <button
+                                    onClick={onToggleReveal}
+                                    className="inline-flex shrink-0 items-center gap-1.5 text-xs text-ink-muted transition-colors hover:text-ink-primary"
+                                >
+                                    {revealed ? <EyeOffIcon className="h-3.5 w-3.5" /> : <EyeIcon className="h-3.5 w-3.5" />}
+                                    {revealed ? 'Ocultar' : 'Mostrar'}
+                                </button>
                             </div>
                         </div>
 
+                        {credential.url && (
+                            <div>
+                                <p className="text-sm text-ink-secondary">Endereço</p>
+                                <a
+                                    href={normalizeUrl(credential.url)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-0.5 block truncate font-mono text-sm text-link hover:text-link-hover"
+                                >
+                                    {credential.url}
+                                </a>
+                            </div>
+                        )}
 
-                        <div className="space-y-3 border-t border-surface-card-border px-4 pb-4 pt-3">
-                            {credential.url && (
-                                <div>
-                                    <p className="text-xs text-ink-secondary">URL / Repositório</p>
-                                    <a
-                                        href={normalizeUrl(credential.url)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mt-0.5 block truncate text-sm text-link hover:text-link-hover"
-                                    >
-                                        {credential.url}
-                                    </a>
-                                </div>
-                            )}
-
-                            {credential.notes && (
-                                <div>
-                                    <p className="text-xs text-ink-secondary">Notas</p>
-                                    <p className="mt-0.5 whitespace-pre-wrap text-sm text-ink-primary/90">
-                                        {credential.notes}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                        {credential.notes && (
+                            <div>
+                                <p className="text-sm text-ink-secondary">Notas</p>
+                                <p className="mt-0.5 max-w-prose whitespace-pre-wrap text-sm leading-relaxed text-ink-primary/90">
+                                    {credential.notes}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </>
-
+            </div>
         </div>
     )
 }

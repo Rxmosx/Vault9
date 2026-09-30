@@ -32,45 +32,6 @@ function SearchIcon({className}: { className?: string }) {
     )
 }
 
-function KeyStatIcon({className}: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
-             strokeLinejoin="round" className={className}>
-            <path
-                d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/>
-            <circle cx="16.5" cy="7.5" r="0.5" fill="currentColor"/>
-        </svg>
-    )
-}
-
-function FolderStatIcon({className}: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
-             strokeLinejoin="round" className={className}>
-            <path d="M4 6a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/>
-        </svg>
-    )
-}
-
-function TagStatIcon({className}: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
-             strokeLinejoin="round" className={className}>
-            <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.828 8.828a2 2 0 0 0 2.828 0l7.172-7.172a2 2 0 0 0 0-2.828Z"/>
-            <circle cx="7.5" cy="7.5" r="1" fill="currentColor"/>
-        </svg>
-    )
-}
-
-// function ShieldStatIcon({className}: { className?: string }) {
-//     return (
-//         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"
-//              strokeLinejoin="round" className={className}>
-//             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
-//         </svg>
-//     )
-// }
-
 function belongsToProject(
     cred: Credential,
     projectId: string,
@@ -261,17 +222,11 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
     }
 
     const chipClass = (active: boolean) =>
-        `shrink-0 rounded-full border px-3 py-1 text-xs ${
+        `shrink-0 rounded-control border px-3 py-1 text-xs transition-colors ${
             active
-                ? 'border-accent bg-accent text-white'
+                ? 'border-accent text-accent'
                 : 'border-surface-card-border text-ink-secondary hover:bg-surface-card'
         }`
-
-    const statCards = [
-        {label: 'Total Armazenado', value: `${projectFiltered.length}`, sub: 'segredos', Icon: KeyStatIcon},
-        {label: 'Projetos', value: `${projects.length}`, sub: 'ativos', Icon: FolderStatIcon},
-        {label: 'Tipos diferentes', value: `${typesInScope.length}`, sub: 'no escopo atual', Icon: TagStatIcon},
-    ]
 
     return (
         <div className="flex h-svh bg-surface-page-deep">
@@ -298,67 +253,54 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
                 onOpenSettings={onOpenSettings}
             />
 
-            <main className="flex-1 overflow-y-auto justify-center">
-                <div className="mx-auto max-w-7xl px-4 py-6">
-                    {/* Barra superior */}
-                    <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-1.5 text-sm text-ink-muted">
-                            <span>Vault9</span>
-                            <span>/</span>
-                            <span className="font-medium text-ink-primary">{currentProjectLabel}</span>
+            <main className="flex-1 overflow-y-auto">
+                <div className="mx-auto max-w-4xl px-6 py-8">
+                    <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+                        <div>
+                            <h2 className="text-2xl font-semibold tracking-tight text-ink-primary">
+                                {currentProjectLabel}
+                            </h2>
+                            <p className="mt-1 text-sm text-ink-muted">
+                                {projectFiltered.length} {projectFiltered.length === 1 ? 'segredo' : 'segredos'}
+                                {typesInScope.length > 0 &&
+                                    `, ${typesInScope.length} ${typesInScope.length === 1 ? 'tipo' : 'tipos'}`}
+                            </p>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <SearchIcon
                                     className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"/>
                                 <input
-                                    placeholder="Buscar credencial, token, host..."
+                                    placeholder="Buscar por nome, usuário ou endereço"
+                                    aria-label="Buscar credenciais"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-64 rounded-md border border-surface-card-border bg-surface-token py-1.5 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none focus:border-accent/60"
+                                    className="w-72 rounded-control border border-surface-card-border bg-surface-token py-2 pl-8 pr-2 text-sm text-ink-primary placeholder:text-ink-muted outline-none transition-colors focus:border-accent"
                                 />
                             </div>
                             {!adding && (
                                 <button
                                     onClick={() => setAdding(true)}
-                                    className="bg-accent px-3 shadow-2xl shadow-accent-strong py-1.5 text-sm text-white hover:bg-accent-strong"
+                                    className="rounded-control bg-accent px-3.5 py-2 text-sm font-medium text-on-accent transition-colors hover:bg-accent-strong"
                                 >
-                                    + Nova credencial
+                                    Nova credencial
                                 </button>
                             )}
                         </div>
-                    </div>
+                    </header>
 
-                    {/* Cards de estatística */}
-                    <div className="mb-6 grid grid-cols-2 gap-10 lg:grid-cols-3 ">
-                        {statCards.map(({label, value, sub, Icon}) => (
-                            <div
-                                key={label}
-                                className="flex items-start justify-between gap-3 rounded-xl border border-surface-card-border bg-surface-card p-4"
-                            >
-                                <div className="min-w-0">
-                                    <p className="text-xs text-ink-secondary">{label}</p>
-                                    <p className="mt-1 text-2xl font-semibold text-ink-primary">{value}</p>
-                                    <p className="mt-0.5 truncate text-xs text-ink-muted">{sub}</p>
-                                </div>
-                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-card-border bg-surface-token text-ink-muted">
-                                    <Icon className="h-4.5 w-4.5"/>
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="m-auto max-w-5xl">
-                        {/* Filtros de tipo + ordenação */}
-                        <div className="m-auto max-w-5xl mb-4 flex flex-wrap items-center justify-between gap-2">
-                            {typesInScope.length > 0 && (
-                                <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
-                                    <button
-                                        onClick={() => setSelectedType(ALL)}
-                                        className={chipClass(selectedType === ALL)}
-                                    >
-                                        Todos os tipos {projectFiltered.length}
-                                    </button>
+                    <div>
+                        {(typesInScope.length > 0 || projectFiltered.length > 1) && (
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex flex-wrap gap-2">
+                                    {typesInScope.length > 0 && (
+                                        <button
+                                            onClick={() => setSelectedType(ALL)}
+                                            className={chipClass(selectedType === ALL)}
+                                        >
+                                            Todos os tipos {projectFiltered.length}
+                                        </button>
+                                    )}
                                     {typesInScope.map(({label, count}) => (
                                         <button
                                             key={label}
@@ -369,21 +311,18 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
                                         </button>
                                     ))}
                                 </div>
-                            )}
 
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as SortBy)}
-                                className="rounded-md border border-surface-card-border bg-surface-token px-2 py-1.5 text-xs text-ink-secondary outline-none focus:border-accent/60"
-                            >
-                                <option value="recent">Ordenar por: Mais recentes</option>
-                                <option value="name">Ordenar por: Nome A-Z</option>
-                            </select>
-                        </div>
-
-                        <p className="m-auto max-w-5xl mb-3 text-xs text-ink-muted">
-                            Listando {visibleCredentials.length} de {projectFiltered.length} credenciais
-                        </p>
+                                <select
+                                    value={sortBy}
+                                    aria-label="Ordenar credenciais"
+                                    onChange={(e) => setSortBy(e.target.value as SortBy)}
+                                    className="rounded-control border border-surface-card-border bg-surface-token px-2 py-1.5 text-xs text-ink-secondary outline-none focus:border-accent"
+                                >
+                                    <option value="recent">Mais recentes</option>
+                                    <option value="name">Nome, A a Z</option>
+                                </select>
+                            </div>
+                        )}
 
                         {adding && (
                             <div className="mb-4">
@@ -398,25 +337,37 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
                         )}
 
                         {loading ? (
-                            <p className="text-ink-muted">Carregando...</p>
+                            <div className="border-t border-surface-card-border" aria-busy="true" aria-label="Carregando credenciais">
+                                {[0, 1, 2].map((i) => (
+                                    <div key={i} className="flex items-center gap-3 border-b border-surface-card-border px-4 py-4">
+                                        <span className="h-8 w-8 rounded-control bg-surface-card" />
+                                        <span className="h-3 w-40 rounded-control bg-surface-card" />
+                                    </div>
+                                ))}
+                            </div>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="border-t border-surface-card-border">
                                 {visibleCredentials.map((cred) =>
                                         editingId === cred.id ? (
-                                            <CredentialForm
-                                                key={cred.id}
-                                                initial={cred}
-                                                projects={projects}
-                                                fixedProjectId={null}
-                                                typeSuggestions={distinctTypes(credentials)}
-                                                onSubmit={(input) => handleUpdate(cred.id, input)}
-                                                onCancel={() => setEditingId(null)}
-                                            />
+                                            <div key={cred.id} className="py-3">
+                                                <CredentialForm
+                                                    initial={cred}
+                                                    projects={projects}
+                                                    fixedProjectId={null}
+                                                    typeSuggestions={distinctTypes(credentials)}
+                                                    onSubmit={(input) => handleUpdate(cred.id, input)}
+                                                    onCancel={() => setEditingId(null)}
+                                                />
+                                            </div>
                                         ) : (
                                             <CredentialCard
                                                 key={cred.id}
                                                 credential={cred}
-                                                projectName={projects.find((p) => p.id === cred.projectId)?.name}
+                                                projectName={
+                                                    selectedProjectId === ALL
+                                                        ? projects.find((p) => p.id === cred.projectId)?.name
+                                                        : undefined
+                                                }
                                                 revealed={revealedId === cred.id}
                                                 copied={copiedId === cred.id}
                                                 onToggleReveal={() =>
@@ -429,18 +380,43 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
                                         ),
                                 )}
                                 {visibleCredentials.length === 0 && !adding && (
-                                    <p className="text-ink-muted">Nenhuma credencial ainda.</p>
+                                    <div className="py-16 text-center">
+                                        {projectFiltered.length === 0 ? (
+                                            <>
+                                                <p className="font-medium text-ink-primary">
+                                                    Este cofre ainda não tem segredos
+                                                </p>
+                                                <p className="mt-1 text-sm text-ink-muted">
+                                                    Guarde a primeira senha, chave ou token.
+                                                </p>
+                                                <button
+                                                    onClick={() => setAdding(true)}
+                                                    className="mt-4 rounded-control bg-accent px-3.5 py-2 text-sm font-medium text-on-accent hover:bg-accent-strong"
+                                                >
+                                                    Nova credencial
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <p className="text-sm text-ink-muted">
+                                                Nenhum resultado. Tente outro termo ou limpe os filtros.
+                                            </p>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         )}
-
-                        <p className="mt-8 flex items-center gap-1.5 text-xs text-ink-muted">
-                            <span className="h-1.5 w-1.5 rounded-full bg-success"/>
-                            Cofre local com criptografia AES-256 ponta a ponta
-                        </p>
                     </div>
                 </div>
             </main>
+
+            {copiedId && (
+                <div
+                    role="status"
+                    className="animate-toast pointer-events-none fixed bottom-6 left-1/2 -translate-x-1/2 rounded-control border border-surface-card-border bg-surface-card px-4 py-2 text-sm text-ink-primary"
+                >
+                    Copiado. A área de transferência é limpa em 20 segundos.
+                </div>
+            )}
         </div>
     )
 }
