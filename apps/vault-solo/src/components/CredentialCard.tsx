@@ -173,6 +173,8 @@ export function CredentialCard({
    onDelete,
 }: CredentialCardProps) {
     const [expanded, setExpanded] = useState(false)
+    const [warningDelete, setWarningDelete] = useState(false)
+
 
     return (
         <div className="group border-b border-surface-card-border last:border-b-0">
@@ -205,18 +207,38 @@ export function CredentialCard({
                 </button>
 
                 <div className="flex shrink-0 items-center gap-0.5">
-                    <div className="flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
+                    <div className="flex relative items-center gap-0.5 opacity-0 transition-opacity
+                        focus-within:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+
+                         onBlur={(e) => {
+                             if (!e.currentTarget.contains(e.relatedTarget)) setWarningDelete(false)
+                         }}
+                    >
                         <button onClick={onEdit} aria-label="Editar" title="Editar" className={iconBtn}>
                             <PencilIcon className="h-4 w-4" />
                         </button>
                         <button
-                            onClick={onDelete}
-                            aria-label="Excluir"
-                            title="Excluir"
+                            onClick={() => setWarningDelete((v) => !v)}
+                            aria-label="Warning Excluir"
+                            title="Warning Excluir"
                             className={`${iconBtn} hover:!text-danger-strong`}
                         >
                             <TrashIcon className="h-4 w-4" />
                         </button>
+                        { warningDelete && (
+                            <button
+                                onClick={() => {
+                                    setWarningDelete(false)
+                                    onDelete()
+                                }}
+                                aria-label="Excluir"
+                                title="Excluir"
+                                className={`${dangerBtn} absolute left-9 top-7`}
+                            >
+                                Excluir credencial!
+                            </button>
+                        )}
+
                     </div>
                     <button
                         onClick={onCopyPassword}
