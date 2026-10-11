@@ -44,6 +44,7 @@ export async function deriveKey(
   masterPassword: string,
   salt: Bytes = generateSalt(),
   params: KdfParams = KDF_PARAMS,
+
 ): Promise<DerivedKey> {
   const result = await argon2.hash({
     pass: masterPassword,

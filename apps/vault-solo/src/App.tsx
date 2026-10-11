@@ -4,7 +4,7 @@ import { VaultView } from './components/VaultView'
 import { Settings } from './components/Settings'
 import { useIdleLock } from './hooks/useIdleLock'
 import { hasVault, lock, getIdleTimeoutMs, setIdleTimeoutMs } from './lib/vault'
-import {DEFAULT_IDLE_TIMEOUT_MS} from './lib/db.ts'
+import {DEFAULT_IDLE_TIMEOUT_MS} from './lib/db'
 
 function App() {
     const [ready, setReady] = useState(false)
