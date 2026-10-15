@@ -9,7 +9,13 @@ import {
     VAULT_META_ID,
     type VaultMetaRecord,
 } from './db'
-import createPlugin from "tailwindcss/plugin";
+import {
+    cancelPendingSave,
+    syncDeleteCredential,
+    syncDeleteProject,
+    syncPutCredential,
+    syncPutProject,
+} from './syncDoc'
 
 // Known plaintext used only to confirm the master password on unlock — it
 // is never a secret, since correctness is verified locally and nothing
@@ -310,7 +316,9 @@ export async function createProject(name: string): Promise<Project> {
     const id = crypto.randomUUID()
     const {ciphertext, iv} = await encryptString(key, JSON.stringify({name}))
 
-    await db.projects.put({id, ciphertext, iv, createdAt: now})
+    const record = {ciphertext, iv, createdAt: now}
+    await db.projects.put({id, ...record})
+    syncPutProject(id, record)
 
     return {id, name, createdAt: now}
 }
@@ -318,6 +326,7 @@ export async function createProject(name: string): Promise<Project> {
 export async function deleteProject(id: string) {
     requireKey()
     await db.projects.delete(id)
+    syncDeleteProject(id)
 }
 
 export async function listCredentials(): Promise<Credential[]> {
@@ -340,7 +349,9 @@ export async function addCredential(input: CredentialInput): Promise<Credential>
     const id = crypto.randomUUID()
     const {ciphertext, iv} = await encryptString(key, JSON.stringify(input))
 
-    await db.credentials.put({id, ciphertext, iv, createdAt: now, updatedAt: now})
+    const record = {ciphertext, iv, createdAt: now, updatedAt: now}
+    await db.credentials.put({id, ...record})
+    syncPutCredential(id, record)
 
     return {id, createdAt: now, updatedAt: now, ...input}
 }
@@ -360,13 +371,9 @@ export async function updateCredential(
     const now = Date.now()
     const {ciphertext, iv} = await encryptString(key, JSON.stringify(input))
 
-    await db.credentials.put({
-        id,
-        ciphertext,
-        iv,
-        createdAt: existing.createdAt,
-        updatedAt: now,
-    })
+    const record = {ciphertext, iv, createdAt: existing.createdAt, updatedAt: now}
+    await db.credentials.put({id, ...record})
+    syncPutCredential(id, record)
 
     return {id, createdAt: existing.createdAt, updatedAt: now, ...input}
 }
@@ -374,6 +381,7 @@ export async function updateCredential(
 export async function deleteCredential(id: string): Promise<void> {
     requireKey()
     await db.credentials.delete(id)
+    syncDeleteCredential(id)
 }
 
 // ============================================================
@@ -509,10 +517,12 @@ export async function importBackup(file: File): Promise<void> {
         createdAt: p.createdAt,
     }))
 
-    await db.transaction('rw', db.meta, db.credentials, db.projects, async () => {
+    cancelPendingSave()
+    await db.transaction('rw', db.meta, db.credentials, db.projects, db.syncState, async () => {
         await db.meta.clear()
         await db.credentials.clear()
         await db.projects.clear()
+        await db.syncState.clear()
         await db.meta.put(meta)
         await db.credentials.bulkPut(credentials)
         await db.projects.bulkPut(projects)
@@ -523,10 +533,12 @@ export async function importBackup(file: File): Promise<void> {
 
 /** Danger Zone: apaga tudo, sem exportar nada antes. Irreversível. */
 export async function resetVault(): Promise<void> {
-    await db.transaction('rw', db.meta, db.credentials, db.projects, async () => {
+    cancelPendingSave()
+    await db.transaction('rw', db.meta, db.credentials, db.projects, db.syncState, async () => {
         await db.meta.clear()
         await db.credentials.clear()
         await db.projects.clear()
+        await db.syncState.clear()
     })
     lock()
 }

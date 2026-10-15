@@ -5,6 +5,7 @@ import { Settings } from './components/Settings'
 import { useIdleLock } from './hooks/useIdleLock'
 import { hasVault, lock, getIdleTimeoutMs, setIdleTimeoutMs } from './lib/vault'
 import {DEFAULT_IDLE_TIMEOUT_MS} from './lib/db'
+import {initSyncDoc} from './lib/syncDoc'
 
 function App() {
     const [ready, setReady] = useState(false)
@@ -14,7 +15,7 @@ function App() {
     const [idleTimeoutMs, setIdleTimeoutMsState] = useState(DEFAULT_IDLE_TIMEOUT_MS)
 
     useEffect(() => {
-        hasVault().then((exists) => {
+        Promise.all([hasVault(), initSyncDoc()]).then(([exists]) => {
             setVaultExists(exists)
             setReady(true)
         })
@@ -65,10 +66,7 @@ function App() {
                 idleTimeoutMs={idleTimeoutMs}
                 onChangeIdleTimeout={handleChangeIdleTimeout}
                 onBack={() => setShowSettings(false)}
-                onLocked={() => {
-                    setUnlocked(false)
-                    setShowSettings(false)
-                }}
+                onLocked={() => window.location.reload()}
             />
         )
     }

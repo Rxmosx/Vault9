@@ -157,7 +157,8 @@ export const actionBtn =
     'inline-flex shrink-0 items-center gap-1.5 rounded-control border border-surface-card-border px-2.5 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-ink-muted hover:bg-surface-card hover:text-ink-primary'
 
 export const dangerBtn =
-    'inline-flex shrink-0 items-center gap-1.5 rounded-control border border-danger/40 bg-danger-bg px-2.5 py-1.5 text-xs font-medium text-danger-strong transition-colors hover:bg-danger/20'
+    'inline-flex items-center w-2/1 gap-1.5 rounded-control border border-danger/40 bg-danger-bg px-2.5 py-1.5 text-xs ' +
+    'font-medium text-danger-strong transition-colors hover:bg-danger/20'
 
 const iconBtn =
     'flex h-8 w-8 shrink-0 items-center justify-center rounded-control text-ink-muted transition-colors hover:bg-surface-card-border hover:text-ink-primary'

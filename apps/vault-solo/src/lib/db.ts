@@ -37,10 +37,20 @@ export interface ProjectRecord {
   createdAt: number
 }
 
+export const SYNC_STATE_ID = 'singleton'
+
+export interface SyncStateRecord {
+  id: typeof SYNC_STATE_ID
+  /** Full snapshot of the Y.Doc (Y.encodeStateAsUpdate). Ciphertext and
+   * non-secret metadata only. */
+  update: Bytes
+}
+
 class VaultDatabase extends Dexie {
   meta!: EntityTable<VaultMetaRecord, 'id'>
   credentials!: EntityTable<CredentialRecord, 'id'>
   projects!: EntityTable<ProjectRecord, 'id'>
+  syncState!: EntityTable<SyncStateRecord, 'id'>
 
   constructor() {
     super('vault')
@@ -52,6 +62,12 @@ class VaultDatabase extends Dexie {
       meta: 'id',
       credentials: 'id, updatedAt',
       projects: 'id, createdAt',
+    })
+    this.version(3).stores({
+      meta: 'id',
+      credentials: 'id, updatedAt',
+      projects: 'id, createdAt',
+      syncState: 'id',
     })
   }
 }
