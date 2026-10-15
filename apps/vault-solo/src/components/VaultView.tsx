@@ -11,6 +11,7 @@ import {
     type CredentialInput,
     type Project, deleteProject,
 } from '../lib/vault'
+import {onRemoteChange} from '../lib/syncDoc'
 import {CredentialForm} from './CredentialForm'
 import {CredentialCard} from './CredentialCard'
 import {ALL_PROJECTS as ALL, UNASSIGNED_PROJECT as UNASSIGNED, Sidebar} from './Sidebar'
@@ -111,6 +112,10 @@ export function VaultView({ onLock, onOpenSettings }: VaultViewProps) {
     useEffect(() => {
         refresh().finally(() => setLoading(false))
     }, [])
+
+    useEffect(() => onRemoteChange(() => {
+        refresh().catch(console.error)
+    }), [])
 
     useEffect(() => {
         if (!revealedId) return
